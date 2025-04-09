@@ -77,15 +77,22 @@ const SongPlayerSidebar = ({ song, token, player, deviceId, onNext }) => {
 
   useEffect(() => {
     const handleKeydown = (e) => {
-      if (e.code === 'Space') {
+      const tag = document.activeElement?.tagName?.toLowerCase();
+      const isTyping = tag === 'textarea' || tag === 'input';
+  
+      if (e.code === 'Space' && !isTyping) {
         e.preventDefault();
         togglePlay();
       }
     };
-
+  
     window.addEventListener('keydown', handleKeydown);
     return () => window.removeEventListener('keydown', handleKeydown);
   }, [player]);
+  
+  
+
+ 
 
   const togglePlay = async () => {
     if (!player) return;
@@ -139,7 +146,7 @@ const SongPlayerSidebar = ({ song, token, player, deviceId, onNext }) => {
   return (
     <div className="bg-neutral-900 p-3 rounded-xl shadow-md text-white w-full max-w-[280px] mx-auto">
       <img
-        src={song.album.cover_url}
+        src={song.album_cover}
         alt="Album"
         className="w-full object-cover rounded-md mb-3 max-h-60"
       />

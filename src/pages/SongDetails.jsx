@@ -10,6 +10,7 @@ const SongDetails = ({ song, token, player, deviceId }) => {
   const [songDetails, setSongDetails] = useState(null);
   const [tracklist, setTracklist] = useState([]);
   const [currentSongId, setCurrentSongId] = useState(null);
+  console.log(tracklist)
 
   useEffect(() => {
     if (!song?.song_id) return;

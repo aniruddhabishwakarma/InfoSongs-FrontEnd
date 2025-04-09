@@ -7,6 +7,8 @@ import Login from './pages/Login';
 import ArtistDetail from './pages/ArtistDetail';
 import SongDetails from './pages/SongDetails';
 import SpotifyPlayer from './components/SpotifyPlayer';
+import { Toaster } from 'react-hot-toast';
+import MyPlaylists from './pages/MyPlaylists';
 
 function App() {
   const { token: spotifyToken, isAuthChecked, redirectToSpotify } = useSpotifyAuth();
@@ -41,6 +43,8 @@ function App() {
   }
 
   return (
+    <>
+     <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
     <BrowserRouter>
       <Routes>
         {/* Login Page */}
@@ -84,7 +88,7 @@ function App() {
 
           {/* Artist Page */}
           <Route path="artist/:id" element={<ArtistDetail />} />
-
+          <Route path="my-playlists" element={<MyPlaylists />} />
           {/* Song Details Page (passes selected song) */}
           <Route
             path="song-details"
@@ -104,6 +108,7 @@ function App() {
         </Route>
       </Routes>
     </BrowserRouter>
+    </>
   );
 }
 

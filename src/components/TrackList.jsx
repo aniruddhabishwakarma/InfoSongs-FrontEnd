@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import axios from 'axios';
 
 const TrackList = ({ song, tracklist, setTracklist, onTrackClick }) => {
+  console.log(song)
   useEffect(() => {
     if (!song?.artist?.id) return;
 
@@ -11,9 +12,7 @@ const TrackList = ({ song, tracklist, setTracklist, onTrackClick }) => {
           `http://localhost:8000/api/songs/artist/${song.artist.id}/`
         );
 
-        const tracks = res.data;
-
-        setTracklist(tracks);
+        setTracklist(res.data);
       } catch (err) {
         console.error("❌ Error fetching tracks:", err);
       }
@@ -60,8 +59,8 @@ const TrackList = ({ song, tracklist, setTracklist, onTrackClick }) => {
                   <span className="text-sm font-medium">{track.song_name}</span>
                 </div>
               </td>
-              <td>—</td>
-              <td>{formatTime(track.duration)}</td>
+              <td className="text-sm text-gray-300">{track.album_name || 'Single'}</td>
+              <td className="text-sm text-gray-300">{formatTime(track.duration)}</td>
             </tr>
           ))}
         </tbody>
