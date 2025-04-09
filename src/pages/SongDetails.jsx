@@ -5,12 +5,21 @@ import TrackList from '../components/TrackList';
 import CommentsSection from '../components/CommentsSection';
 import SongPlayerSidebar from '../components/SongPlayerSidebar';
 import axios from 'axios';
+import { useMusic } from '../context/MusicContext';
 
-const SongDetails = ({ song, token, player, deviceId }) => {
+const SongDetails = () => {
+  const {
+    selectedSong: song,
+    setSelectedSong,
+    spotifyToken: token,
+    player,
+    deviceId,
+  } = useMusic();
+  
+
   const [songDetails, setSongDetails] = useState(null);
   const [tracklist, setTracklist] = useState([]);
   const [currentSongId, setCurrentSongId] = useState(null);
-  console.log(tracklist)
 
   useEffect(() => {
     if (!song?.song_id) return;
@@ -55,15 +64,17 @@ const SongDetails = ({ song, token, player, deviceId }) => {
         },
         body: JSON.stringify({ uris: [track.uri] }),
       });
-
+  
       const res = await fetch(`http://localhost:8000/api/song-details/${track.song_id}/`);
       const data = await res.json();
       setSongDetails(data);
       setCurrentSongId(track.song_id);
+      setSelectedSong(track); // ✅ 🔥 This makes the sidebar update
     } catch (err) {
       console.error("❌ Error playing selected track:", err);
     }
   };
+  
 
   const handleNext = () => {
     if (!tracklist.length || !songDetails) return;

@@ -5,6 +5,7 @@ import App from './App.jsx'
 import { SpotifyAuthProvider } from './context/SpotifyAuthContext.jsx'
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { UserProvider } from './context/UserContext.jsx'
+import { MusicProvider } from './context/MusicContext.jsx'
 
 
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -15,7 +16,9 @@ createRoot(document.getElementById('root')).render(
     <GoogleOAuthProvider clientId={googleClientId}>
       <UserProvider>
       <SpotifyAuthProvider>
+        <MusicProvider>
         <App />
+        </MusicProvider>
         </SpotifyAuthProvider>
       </UserProvider>
     </GoogleOAuthProvider>

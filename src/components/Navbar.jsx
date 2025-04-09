@@ -58,7 +58,7 @@ const Navbar = () => {
         {dropdownOpen && (
           <div className="absolute right-0 mt-2 w-40 bg-white dark:bg-[#1f1f1f] text-sm rounded-lg shadow-lg overflow-hidden z-50">
             <Link
-              to="/settings"
+              to="/profile"
               className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-800 dark:text-white"
             >
               ⚙️ Settings

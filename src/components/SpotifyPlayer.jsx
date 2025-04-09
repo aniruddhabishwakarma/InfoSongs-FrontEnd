@@ -1,13 +1,15 @@
 import { useEffect } from "react";
+import { useMusic } from "../context/MusicContext";
 
-const SpotifyPlayer = ({ token, setPlayer, setDeviceId }) => {
+const SpotifyPlayer = () => {
+  const { spotifyToken: token, setPlayer, setDeviceId } = useMusic();
+
   useEffect(() => {
     if (!token) {
       console.warn("⚠️ Token missing, cannot initialize Spotify SDK.");
       return;
     }
 
-    // Define the callback early
     window.onSpotifyWebPlaybackSDKReady = () => {
       const player = new window.Spotify.Player({
         name: "My Player",
@@ -47,14 +49,12 @@ const SpotifyPlayer = ({ token, setPlayer, setDeviceId }) => {
       player.connect();
     };
 
-    // Only append the script once
     if (!window.Spotify) {
       const script = document.createElement("script");
       script.src = "https://sdk.scdn.co/spotify-player.js";
       script.async = true;
       document.body.appendChild(script);
     } else {
-      // SDK already loaded? Then manually call the callback
       window.onSpotifyWebPlaybackSDKReady();
     }
 
