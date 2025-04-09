@@ -21,6 +21,11 @@ const LikedSongs = () => {
     deviceId,
   } = useMusic();
 
+  console.log(selectedSong)
+  console.log(spotifyToken)
+  console.log(player)
+  console.log(deviceId)
+
   useEffect(() => {
     const fetchLikedSongs = async () => {
       const token = localStorage.getItem("authToken");
@@ -40,6 +45,16 @@ const LikedSongs = () => {
 
     fetchLikedSongs();
   }, []);
+
+  const handleNext = () => {
+    if (!likedSongs.length || !selectedSong) return;
+  
+    const currentIndex = likedSongs.findIndex(
+      (song) => song.song_id === selectedSong.song_id
+    );
+    const nextIndex = (currentIndex + 1) % likedSongs.length;
+    setSelectedSong(likedSongs[nextIndex]);
+  };
 
   return (
     <div
@@ -65,30 +80,51 @@ const LikedSongs = () => {
                 </tr>
               </thead>
               <tbody>
-                {likedSongs.map((song, index) => (
-                  <tr
-                    key={song.song_id}
-                    onClick={() => setSelectedSong(song)} // ✅ Set song on click
-                    className="border-b border-neutral-800 hover:bg-neutral-800 transition cursor-pointer"
-                  >
-                    <td className="pl-2 py-3 text-neutral-400">{index + 1}</td>
-                    <td className="flex items-center gap-4 py-3">
-                      <img
-                        src={song.album_cover}
-                        alt={song.song_name}
-                        className="w-10 h-10 object-cover rounded"
-                      />
-                      <div>
-                        <div className="font-medium">{song.song_name}</div>
-                      </div>
-                    </td>
-                    <td className="py-3 text-neutral-400">{song.album_name}</td>
-                    <td className="py-3 text-right text-neutral-400 pr-4">
-                      {formatDuration(song.duration)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
+  {likedSongs.map((song, index) => {
+    const isPlaying = selectedSong?.song_id === song.song_id;
+    return (
+      <tr
+        key={song.song_id}
+        onClick={() => setSelectedSong(song)}
+        className={`border-b border-neutral-800 hover:bg-neutral-800 transition cursor-pointer ${
+          isPlaying ? "bg-neutral-800 text-green-400" : ""
+        }`}
+      >
+        <td className="pl-2 py-3 text-neutral-400">
+          {isPlaying ? (
+            <div className="flex items-center gap-1">
+              <span className="equalizer-bar h-3 w-[2px] bg-green-400 animate-eq"></span>
+              <span className="equalizer-bar h-4 w-[2px] bg-green-400 animate-eq delay-100"></span>
+              <span className="equalizer-bar h-2 w-[2px] bg-green-400 animate-eq delay-200"></span>
+            </div>
+          ) : (
+            index + 1
+          )}
+        </td>
+
+        <td className="flex items-center gap-4 py-3">
+          <img
+            src={song.album_cover}
+            alt={song.title}
+            className="w-10 h-10 object-cover rounded"
+          />
+          <div>
+            <div className={`font-medium ${isPlaying ? "text-green-400" : ""}`}>
+              {song.title}
+            </div>
+          </div>
+        </td>
+
+        <td className="py-3 text-neutral-400">{song.album_name}</td>
+        <td className="py-3 text-right text-neutral-400 pr-4">
+          {song.duration}
+        </td>
+      </tr>
+    );
+  })}
+</tbody>
+
+
             </table>
           </div>
         </div>
@@ -101,6 +137,7 @@ const LikedSongs = () => {
       token={spotifyToken}
       player={player}
       deviceId={deviceId}
+      onNext = {handleNext}
     />
   ) : (
     <div className="w-full h-full bg-neutral-900 rounded-xl border border-neutral-700 flex items-center justify-center text-neutral-400 text-sm px-4 text-center">
@@ -108,6 +145,7 @@ const LikedSongs = () => {
     </div>
   )}
 </div>
+
 
       </div>
     </div>

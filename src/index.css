@@ -90,3 +90,25 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+@keyframes eqPulse {
+  0%, 100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(2.5);
+  }
+}
+
+.animate-eq {
+  display: inline-block;
+  animation: eqPulse 0.7s infinite ease-in-out;
+}
+
+.delay-100 {
+  animation-delay: 0.1s;
+}
+
+.delay-200 {
+  animation-delay: 0.2s;
+}
