@@ -45,8 +45,10 @@ const TrackList = ({ song, tracklist, setTracklist, onTrackClick }) => {
               <tr
                 key={track.song_id}
                 onClick={() => onTrackClick(track)}
-                className={`hover:bg-neutral-800 transition cursor-pointer ${
-                  isPlaying ? 'bg-neutral-800 text-green-400' : ''
+                className={`border-b border-neutral-800 transition-all duration-300 cursor-pointer ${
+                  isPlaying
+                    ? "bg-black/40 text-green-400 animate-pulse-soft glow-green"
+                    : "hover:bg-black/20 text-white"
                 }`}
               >
                 <td className="py-3 max-w-[300px]">

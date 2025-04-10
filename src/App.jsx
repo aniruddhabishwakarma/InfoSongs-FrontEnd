@@ -94,7 +94,6 @@ function App() {
       <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
       <BrowserRouter>
         <Routes>
-
           <Route
             path="/login"
             element={
@@ -107,7 +106,7 @@ function App() {
           />
 
           {/* ✅ Protected Layout (for future use) */}
-          {/* 
+          
           <Route
             path="/"
             element={
@@ -118,10 +117,10 @@ function App() {
               )
             }
           >
-          */}
+         
 
           {/* ✅ Using open layout temporarily */}
-          <Route path="/" element={<Layout />}>
+          {/* <Route path="/" element={<Layout />}> */}
             <Route
               index
               element={

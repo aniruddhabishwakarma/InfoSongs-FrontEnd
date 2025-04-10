@@ -79,8 +79,6 @@ export default function Login({ setGoogleUser }) {
           <img src={name} alt="Sangeet" className="h-10" />
         </div>
 
-        <h1 className="text-2xl font-bold text-center mb-6">Create a new account</h1>
-
         {error && <p className="text-red-400 text-sm mb-4">{error}</p>}
 
         <label className="text-sm text-gray-400">Email</label>

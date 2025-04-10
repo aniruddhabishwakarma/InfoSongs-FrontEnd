@@ -44,7 +44,7 @@ const Home = ({ token, onSongSelect, setGoogleUser }) => {
   }
 
   return (
-    <div className="p-6 pt-25 my-3 bg-[#181818]">
+    <div className="p-6 pt-25 my-3 bg-gradient-to-br from-black via-[#181818] to-black">
       {/* Section Tags */}
       <div className="flex gap-4 mb-10 ">
         {['Trending', 'Relax', 'Mediation', 'Lofi'].map((tag, i) => (
