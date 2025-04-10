@@ -44,13 +44,13 @@ const Home = ({ token, onSongSelect, setGoogleUser }) => {
   }
 
   return (
-    <div className="p-6 bg-black">
+    <div className="p-6 pt-25 my-3 bg-[#181818]">
       {/* Section Tags */}
-      <div className="flex gap-4 mb-10">
+      <div className="flex gap-4 mb-10 ">
         {['Trending', 'Relax', 'Mediation', 'Lofi'].map((tag, i) => (
           <button
             key={i}
-            className="border border-gray-500 text-white px-4 py-1 rounded-full text-sm hover:bg-gray-800 transition"
+            className="border border-gray-200 text-white px-4 py-1 rounded-full bg-black text-sm hover:bg-gray-800 transition"
           >
             {tag}
           </button>
@@ -63,14 +63,14 @@ const Home = ({ token, onSongSelect, setGoogleUser }) => {
       </h2>
 
       {/* Songs Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-x-6 gap-y-10 justify-items-center">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-x-6 gap-y-10 justify-items-center">
         {songs.length === 0 ? (
           <p className="text-white text-center col-span-full">No songs available.</p>
         ) : (
           songs.map((song, index) => (
             <div
               key={index}
-              className="w-44 sm:w-48 md:w-52 bg-neutral-800 rounded-xl overflow-hidden shadow-md hover:scale-105 hover:shadow-lg transition cursor-pointer group"
+              className="w-44 sm:w-48 md:w-52 bg-neutral-800  overflow-hidden shadow-md hover:scale-105 hover:shadow-lg transition cursor-pointer group"
               onClick={() => handleSongClick(song)}
             >
               {/* Image + Play Button */}

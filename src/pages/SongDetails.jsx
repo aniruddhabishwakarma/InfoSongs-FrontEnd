@@ -1,11 +1,11 @@
-// SongDetails.jsx
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import SongInfoSection from '../components/SongInfoSection';
 import TrackList from '../components/TrackList';
 import CommentsSection from '../components/CommentsSection';
 import SongPlayerSidebar from '../components/SongPlayerSidebar';
 import axios from 'axios';
 import { useMusic } from '../context/MusicContext';
+import ColorThief from 'colorthief';
 
 const SongDetails = () => {
   const {
@@ -15,11 +15,13 @@ const SongDetails = () => {
     player,
     deviceId,
   } = useMusic();
-  
 
   const [songDetails, setSongDetails] = useState(null);
   const [tracklist, setTracklist] = useState([]);
   const [currentSongId, setCurrentSongId] = useState(null);
+  const [bgGradient, setBgGradient] = useState('#181818');
+  const [textColor, setTextColor] = useState('text-white');
+  const imgRef = useRef(null);
 
   useEffect(() => {
     if (!song?.song_id) return;
@@ -64,17 +66,16 @@ const SongDetails = () => {
         },
         body: JSON.stringify({ uris: [track.uri] }),
       });
-  
+
       const res = await fetch(`http://localhost:8000/api/song-details/${track.song_id}/`);
       const data = await res.json();
       setSongDetails(data);
       setCurrentSongId(track.song_id);
-      setSelectedSong(track); // ✅ 🔥 This makes the sidebar update
+      setSelectedSong(track);
     } catch (err) {
       console.error("❌ Error playing selected track:", err);
     }
   };
-  
 
   const handleNext = () => {
     if (!tracklist.length || !songDetails) return;
@@ -84,18 +85,41 @@ const SongDetails = () => {
     playSelectedTrack(nextTrack);
   };
 
-  if (!song) {
-    return <div className="text-white text-center mt-20">No song selected.</div>;
-  }
+  // 🟢 Set background gradient + adaptive text color
+  useEffect(() => {
+    const colorThief = new ColorThief();
 
-  if (!songDetails) {
-    return <div className="text-white text-center mt-20">Loading song details...</div>;
-  }
+    const extractColor = () => {
+      if (imgRef.current && imgRef.current.complete) {
+        const [r, g, b] = colorThief.getColor(imgRef.current);
+        setBgGradient(`linear-gradient(to bottom, rgb(${r},${g},${b}), #181818)`);
+
+        const brightness = 0.299 * r + 0.587 * g + 0.114 * b;
+        setTextColor(brightness > 186 ? 'text-black' : 'text-white');
+      }
+    };
+
+    if (imgRef.current) {
+      if (imgRef.current.complete) extractColor();
+      else imgRef.current.onload = extractColor;
+    }
+  }, [songDetails?.album_cover]);
+
+  if (!song) return <div className="text-white text-center mt-20">No song selected.</div>;
+  if (!songDetails) return <div className="text-white text-center mt-20">Loading song details...</div>;
 
   return (
-    <div className="bg-black text-white px-6 py-10">
+    <div className={`px-6 pt-20 my-3 min-h-screen transition-colors duration-300 ${textColor}`} style={{ background: bgGradient }}>
+      {/* Hidden image to extract color */}
+      <img
+        ref={imgRef}
+        crossOrigin="anonymous"
+        src={songDetails.album_cover}
+        alt="cover"
+        className="hidden"
+      />
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left section */}
         <div className="lg:col-span-2 space-y-10">
           <SongInfoSection song={songDetails} />
           <TrackList
@@ -106,8 +130,6 @@ const SongDetails = () => {
           />
           <CommentsSection songId={songDetails.song_id} />
         </div>
-
-        {/* Right section - Sidebar beside */}
         <div className="lg:col-span-1">
           <SongPlayerSidebar
             song={songDetails}

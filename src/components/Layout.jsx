@@ -1,14 +1,27 @@
-import React from "react";
+import React, { useState } from "react";
 import Navbar from "./Navbar";
+import Sidebar from "./Sidebar";
+import Footer from "./Footer";
 import { Outlet } from "react-router-dom";
 
 const Layout = () => {
+  const [collapsed, setCollapsed] = useState(false);
+
   return (
     <div className="bg-black min-h-screen text-white">
       <Navbar />
-      <main className="p-4 pt-20">
-        <Outlet /> {/* ✅ This renders the current route's page */}
-      </main>
+      <div className="flex">
+        <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
+        <main
+          className={`flex-1 min-h-screen bg-black text-white pt-[5rem] px-2 overflow-y-auto transition-all duration-300 ${
+          collapsed ? 'ml-[4rem]' : 'ml-[15rem]'
+          }`}
+        >
+
+          <Outlet context={{ collapsed }} />
+        </main>
+      </div>
+      <Footer collapsed={collapsed} />
     </div>
   );
 };
