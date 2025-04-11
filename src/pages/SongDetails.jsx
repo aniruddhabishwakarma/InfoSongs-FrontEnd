@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
+import { useParams } from 'react-router-dom';
 import SongInfoSection from '../components/SongInfoSection';
 import TrackList from '../components/TrackList';
 import CommentsSection from '../components/CommentsSection';
@@ -8,8 +9,9 @@ import { useMusic } from '../context/MusicContext';
 import ColorThief from 'colorthief';
 
 const SongDetails = () => {
+  const { id } = useParams();
   const {
-    selectedSong: song,
+    selectedSong,
     setSelectedSong,
     spotifyToken: token,
     player,
@@ -18,45 +20,44 @@ const SongDetails = () => {
 
   const [songDetails, setSongDetails] = useState(null);
   const [tracklist, setTracklist] = useState([]);
-  const [currentSongId, setCurrentSongId] = useState(null);
   const [bgGradient, setBgGradient] = useState('#181818');
   const [textColor, setTextColor] = useState('text-white');
   const imgRef = useRef(null);
 
+  // Fetch song details using param OR context
   useEffect(() => {
-    if (!song?.song_id) return;
-    fetch(`http://localhost:8000/api/song-details/${song.song_id}/`)
+    const songId = selectedSong?.song_id || id;
+    if (!songId) return;
+
+    fetch(`http://localhost:8000/api/song-details/${songId}/`)
       .then(res => res.json())
       .then(data => {
         setSongDetails(data);
-        setCurrentSongId(data.song_id);
+        if (!selectedSong) setSelectedSong(data); // sync context if it wasn't set
       })
       .catch(err => console.error("❌ Error fetching song details:", err));
-  }, [song?.song_id]);
+  }, [id, selectedSong]);
 
+  // Fetch artist tracks
   useEffect(() => {
+    const artistId = selectedSong?.artist?.id || songDetails?.artist?.id;
+    if (!artistId) return;
+
     const fetchTracks = async () => {
-      if (!song?.artist?.id) return;
       try {
-        const res = await axios.get(
-          `http://localhost:8000/api/songs/artist/${song.artist.id}/`
-        );
-
+        const res = await axios.get(`http://localhost:8000/api/songs/artist/${artistId}/`);
         setTracklist(res.data);
-
-        if (res.data.length > 0) {
-          playSelectedTrack(res.data.find(t => t.song_id === song?.song_id) || res.data[0]);
-        }
       } catch (err) {
         console.error("❌ Error fetching artist tracks:", err);
       }
     };
 
     fetchTracks();
-  }, [song]);
+  }, [selectedSong, songDetails]);
 
   const playSelectedTrack = async (track) => {
     if (!track || !player || !deviceId) return;
+
     try {
       await fetch(`https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`, {
         method: 'PUT',
@@ -70,7 +71,6 @@ const SongDetails = () => {
       const res = await fetch(`http://localhost:8000/api/song-details/${track.song_id}/`);
       const data = await res.json();
       setSongDetails(data);
-      setCurrentSongId(track.song_id);
       setSelectedSong(track);
     } catch (err) {
       console.error("❌ Error playing selected track:", err);
@@ -85,10 +85,9 @@ const SongDetails = () => {
     playSelectedTrack(nextTrack);
   };
 
-  // 🟢 Set background gradient + adaptive text color
+  // Gradient background
   useEffect(() => {
     const colorThief = new ColorThief();
-
     const extractColor = () => {
       if (imgRef.current && imgRef.current.complete) {
         const [r, g, b] = colorThief.getColor(imgRef.current);
@@ -105,19 +104,11 @@ const SongDetails = () => {
     }
   }, [songDetails?.album_cover]);
 
-  if (!song) return <div className="text-white text-center mt-20">No song selected.</div>;
   if (!songDetails) return <div className="text-white text-center mt-20">Loading song details...</div>;
 
   return (
     <div className={`px-6 pt-20 my-3 min-h-screen transition-colors duration-300 ${textColor}`} style={{ background: bgGradient }}>
-      {/* Hidden image to extract color */}
-      <img
-        ref={imgRef}
-        crossOrigin="anonymous"
-        src={songDetails.album_cover}
-        alt="cover"
-        className="hidden"
-      />
+      <img ref={imgRef} crossOrigin="anonymous" src={songDetails.album_cover} alt="cover" className="hidden" />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-10">

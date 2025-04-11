@@ -14,6 +14,7 @@ import LikedSongs from './pages/LikedSongs';
 import Following from './pages/Following';
 import PlaylistDetails from './pages/PlayListDetails';
 import SearchResults from './pages/SearchResults';
+import { useSearch } from './context/SearchContext';
 
 function App() {
   const { token: spotifyToken, isAuthChecked, redirectToSpotify } = useSpotifyAuth();
@@ -21,6 +22,7 @@ function App() {
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(
     !!localStorage.getItem("authToken") && localStorage.getItem("loginMethod") === "normal"
   );
+  const { searchQuery, setSearchQuery } = useSearch();
 
   const {
     setSelectedSong,
@@ -75,7 +77,6 @@ function App() {
     return <div className="text-white text-center mt-20">Checking Spotify authentication...</div>;
   }
 
-  // ❌ No Spotify token
   if (!spotifyToken) {
     return (
       <div className="flex flex-col h-screen items-center justify-center text-white bg-black">
@@ -106,8 +107,6 @@ function App() {
             }
           />
 
-          {/* ✅ Protected Layout (for future use) */}
-          
           <Route
             path="/"
             element={
@@ -118,10 +117,6 @@ function App() {
               )
             }
           >
-         
-
-          {/* ✅ Using open layout temporarily */}
-          {/* <Route path="/" element={<Layout />}> */}
             <Route
               index
               element={
@@ -140,8 +135,8 @@ function App() {
             <Route path="playlists" element={<MyPlaylists />} />
             <Route path="playlist/:id" element={<PlaylistDetails />} />
             <Route path="following" element={<Following />} />
-            <Route path="/search" element={<SearchResults />} />
-
+            <Route path="search" element={<SearchResults setSearchQuery={setSearchQuery} />} />
+            <Route path="song-details/:id" element={<SongDetails />} />
             <Route
               path="song-details"
               element={
