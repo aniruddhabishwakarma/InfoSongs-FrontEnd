@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useGoogleLogin } from '@react-oauth/google';
+import { GoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
@@ -43,18 +43,19 @@ export default function Login({ setGoogleUser }) {
     }
   };
 
-  const handleGoogleSuccess = async (tokenResponse) => {
+  const handleGoogleSuccess = async (credentialResponse) => {
     try {
-      const decoded = jwtDecode(tokenResponse.credential);
-
+      const idToken = credentialResponse.credential;
+      const decoded = jwtDecode(idToken);
+  
       const res = await axios.post("http://localhost:8000/api/google-login/", {
-        id_token: tokenResponse.credential,
+        id_token: idToken,
       });
-
+  
       localStorage.setItem("authToken", res.data.access);
       localStorage.setItem("refreshToken", res.data.refresh);
       localStorage.setItem("googleUser", JSON.stringify(decoded));
-      localStorage.setItem("google-id-token", tokenResponse.credential);
+      localStorage.setItem("google-id-token", idToken);
       window.dispatchEvent(new Event("auth-updated"));
       setGoogleUser(decoded);
       navigate("/");
@@ -63,12 +64,8 @@ export default function Login({ setGoogleUser }) {
       setError("Google login failed. Try again.");
     }
   };
+  
 
-  const loginWithGoogle = useGoogleLogin({
-    onSuccess: handleGoogleSuccess,
-    onError: () => setError("Google login failed ❌"),
-    flow: 'implicit', // or 'auth-code' if you’re using backend exchanges
-  });
 
   return (
     <div className="min-h-screen bg-black flex items-center justify-center px-4">
@@ -120,17 +117,10 @@ export default function Login({ setGoogleUser }) {
           </p>
 
           {/* Custom Google Login Button */}
-          <button
-            onClick={loginWithGoogle}
-            className="w-full flex items-center justify-center gap-3 border border-gray-600 rounded-full py-2 px-4 hover:bg-gray-800 transition"
-          >
-            <img
-              src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-              alt="Google"
-              className="h-5 w-5"
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={() => setError("Google login failed ❌")}
             />
-            <span className="text-white text-sm font-medium">Continue with Google</span>
-          </button>
         </div>
 
         {/* Signup Link */}

@@ -13,6 +13,7 @@ import MyPlaylists from './pages/MyPlaylists';
 import LikedSongs from './pages/LikedSongs';
 import Following from './pages/Following';
 import PlaylistDetails from './pages/PlayListDetails';
+import SearchResults from './pages/SearchResults';
 
 function App() {
   const { token: spotifyToken, isAuthChecked, redirectToSpotify } = useSpotifyAuth();
@@ -139,6 +140,7 @@ function App() {
             <Route path="playlists" element={<MyPlaylists />} />
             <Route path="playlist/:id" element={<PlaylistDetails />} />
             <Route path="following" element={<Following />} />
+            <Route path="/search" element={<SearchResults />} />
 
             <Route
               path="song-details"
