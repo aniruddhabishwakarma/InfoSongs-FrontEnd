@@ -16,6 +16,8 @@ const SongDetails = () => {
     spotifyToken: token,
     player,
     deviceId,
+    lastPlayedUri,
+    setLastPlayedUri,
   } = useMusic();
 
   const [songDetails, setSongDetails] = useState(null);
@@ -24,23 +26,23 @@ const SongDetails = () => {
   const [textColor, setTextColor] = useState('text-white');
   const imgRef = useRef(null);
 
-  // Fetch song details using param OR context
   useEffect(() => {
-    const songId = selectedSong?.song_id || id;
-    if (!songId) return;
-
-    fetch(`http://localhost:8000/api/song-details/${songId}/`)
-      .then(res => res.json())
-      .then(data => {
+    const fetchDetails = async () => {
+      try {
+        const res = await fetch(`http://localhost:8000/api/song-details/${id}/`);
+        const data = await res.json();
         setSongDetails(data);
-        if (!selectedSong) setSelectedSong(data); // sync context if it wasn't set
-      })
-      .catch(err => console.error("❌ Error fetching song details:", err));
-  }, [id, selectedSong]);
+        setSelectedSong(data);
+      } catch (err) {
+        console.error("❌ Error fetching song details:", err);
+      }
+    };
 
-  // Fetch artist tracks
+    fetchDetails();
+  }, [id]);
+
   useEffect(() => {
-    const artistId = selectedSong?.artist?.id || songDetails?.artist?.id;
+    const artistId = songDetails?.artist?.id;
     if (!artistId) return;
 
     const fetchTracks = async () => {
@@ -53,7 +55,39 @@ const SongDetails = () => {
     };
 
     fetchTracks();
-  }, [selectedSong, songDetails]);
+  }, [songDetails]);
+
+  useEffect(() => {
+    const autoPlaySelected = async () => {
+      if (!songDetails?.uri || !player || !deviceId || lastPlayedUri === songDetails.uri) return;
+
+      try {
+        await fetch('https://api.spotify.com/v1/me/player', {
+          method: 'PUT',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ device_ids: [deviceId], play: true })
+        });
+
+        await fetch(`https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`, {
+          method: 'PUT',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ uris: [songDetails.uri] })
+        });
+
+        setLastPlayedUri(songDetails.uri);
+      } catch (err) {
+        console.error("❌ Error autoplaying song:", err);
+      }
+    };
+
+    autoPlaySelected();
+  }, [songDetails?.uri, player, deviceId, token, lastPlayedUri]);
 
   const playSelectedTrack = async (track) => {
     if (!track || !player || !deviceId) return;
@@ -72,6 +106,7 @@ const SongDetails = () => {
       const data = await res.json();
       setSongDetails(data);
       setSelectedSong(track);
+      setLastPlayedUri(track.uri);
     } catch (err) {
       console.error("❌ Error playing selected track:", err);
     }
@@ -85,7 +120,6 @@ const SongDetails = () => {
     playSelectedTrack(nextTrack);
   };
 
-  // Gradient background
   useEffect(() => {
     const colorThief = new ColorThief();
     const extractColor = () => {

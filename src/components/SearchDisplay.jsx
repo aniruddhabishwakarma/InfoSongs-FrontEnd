@@ -129,25 +129,17 @@ const SearchDisplay = ({ results, setPageGradient, setSelectedSong }) => {
             </div>
           )}
 
-          {albums_by_artist?.length > 0 && (
-            <div>
-              <h3 className="text-xl font-semibold mb-4">
-                Albums by {exact_artist.name}
-              </h3>
-              <ul className="list-disc list-inside text-gray-300">
-                {albums_by_artist.map((album, i) => (
-                  <li key={i}>{album}</li>
-                ))}
-              </ul>
-            </div>
-          )}
+
         </div>
       )}
 
       {/* 🎵 Exact Song */}
       {exact_song && (
         <div className="mb-10">
-          <div className="flex items-center gap-6 mb-6">
+          <div
+            className="flex items-center gap-6 mb-6 cursor-pointer"
+            onClick={() => handleSongClick(exact_song)}
+          >
             <img
               ref={imgRef}
               crossOrigin="anonymous"

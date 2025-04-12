@@ -9,6 +9,7 @@ export const MusicProvider = ({ children }) => {
   const [spotifyToken, setSpotifyToken] = useState(null);
   const [player, setPlayer] = useState(null);
   const [deviceId, setDeviceId] = useState(null);
+  const [lastPlayedUri, setLastPlayedUri] = useState(null);
 
   // Keep music context token in sync with auth context
   useEffect(() => {
@@ -28,6 +29,8 @@ export const MusicProvider = ({ children }) => {
         setPlayer,
         deviceId,
         setDeviceId,
+        lastPlayedUri,       
+        setLastPlayedUri,     
       }}
     >
       {children}

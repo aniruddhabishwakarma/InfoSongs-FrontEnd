@@ -98,8 +98,12 @@ export default function Login({ setGoogleUser }) {
           placeholder="Password"
           value={formData.password}
           onChange={handleChange}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') handleLogin();
+          }}
           className="w-full bg-[#1e1e1e] p-3 rounded-md mb-6 mt-1 text-sm"
         />
+
 
         <button
           onClick={handleLogin}

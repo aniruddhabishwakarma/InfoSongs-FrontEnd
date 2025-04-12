@@ -12,6 +12,7 @@ const SearchResults = ({ setSearchQuery }) => {
   const [error, setError] = useState("");
   const [pageGradient, setPageGradient] = useState("from-[#181818] to-[#181818]");
   const navigate = useNavigate();
+  console.log(results)
 
   useEffect(() => {
     const fetchResults = async () => {

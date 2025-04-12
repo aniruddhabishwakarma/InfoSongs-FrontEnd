@@ -31,8 +31,8 @@ const Home = ({ token, onSongSelect, setGoogleUser }) => {
   };
 
   const handleSongClick = (song) => {
-    onSongSelect(song);
-    navigate("/song-details");
+    onSongSelect(song); // Set it in context
+    navigate(`/song-details/${song.song_id}`); // 👈 Pass song_id in URL
   };
 
   if (loading) {

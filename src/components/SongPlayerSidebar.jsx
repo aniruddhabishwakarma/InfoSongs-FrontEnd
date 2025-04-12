@@ -1,4 +1,3 @@
-// SongPlayerSidebar.jsx
 import { useEffect, useState, useRef } from 'react';
 import ColorThief from 'colorthief';
 import {
@@ -9,6 +8,7 @@ import {
   SkipBack,
   SkipForward,
 } from 'lucide-react';
+import { useMusic } from '../context/MusicContext';
 
 const SongPlayerSidebar = ({ song, token, player, deviceId, onNext }) => {
   const [isPaused, setIsPaused] = useState(true);
@@ -20,8 +20,16 @@ const SongPlayerSidebar = ({ song, token, player, deviceId, onNext }) => {
   const imgRef = useRef(null);
   const progressBarRef = useRef(null);
 
+  const {
+    lastPlayedUri,
+    setLastPlayedUri
+  } = useMusic(); // ✅ from context
+
   useEffect(() => {
     if (!player || !deviceId || !song?.uri) return;
+
+    // ✅ Prevent replay if already playing this song
+    if (lastPlayedUri === song.uri) return;
 
     const playSong = async () => {
       try {
@@ -46,6 +54,8 @@ const SongPlayerSidebar = ({ song, token, player, deviceId, onNext }) => {
         setTimeout(() => {
           player.seek(0);
         }, 500);
+
+        setLastPlayedUri(song.uri); // ✅ Persist
       } catch (err) {
         console.error("❌ Error playing song:", err);
       }
@@ -55,7 +65,7 @@ const SongPlayerSidebar = ({ song, token, player, deviceId, onNext }) => {
     setProgress(0);
     setDuration(1);
     setIsPaused(false);
-  }, [song?.uri, player, deviceId, token]);
+  }, [song?.uri, player, deviceId, token, lastPlayedUri, setLastPlayedUri]);
 
   useEffect(() => {
     const interval = setInterval(async () => {
@@ -78,8 +88,7 @@ const SongPlayerSidebar = ({ song, token, player, deviceId, onNext }) => {
   useEffect(() => {
     const handleKeydown = (e) => {
       const tag = document.activeElement?.tagName?.toLowerCase();
-      const isTyping = tag === 'textarea' || tag === 'input';
-      if (e.code === 'Space' && !isTyping) {
+      if (e.code === 'Space' && tag !== 'input' && tag !== 'textarea') {
         e.preventDefault();
         togglePlay();
       }
