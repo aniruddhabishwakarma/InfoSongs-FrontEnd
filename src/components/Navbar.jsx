@@ -60,11 +60,12 @@ const Navbar = () => {
         const { exact_song, exact_artist } = res.data;
 
         if (exact_song || exact_artist) {
+          
           const token = localStorage.getItem("authToken");
           await axios.post("http://localhost:8000/api/save-search-keyword/", {
             keyword: trimmed,
             song_id: exact_song?.id || null,
-            artist_id: exact_artist?.id || null,
+            artist_id: exact_artist?.artist_id || null,
           }, {
             headers: { Authorization: `Bearer ${token}` },
           });

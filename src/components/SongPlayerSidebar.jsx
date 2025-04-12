@@ -9,6 +9,7 @@ import {
   SkipForward,
 } from 'lucide-react';
 import { useMusic } from '../context/MusicContext';
+import { useNavigate } from 'react-router-dom';
 
 const SongPlayerSidebar = ({ song, token, player, deviceId, onNext }) => {
   const [isPaused, setIsPaused] = useState(true);
@@ -19,6 +20,8 @@ const SongPlayerSidebar = ({ song, token, player, deviceId, onNext }) => {
   const [bgGradient, setBgGradient] = useState('#1e1e2f');
   const imgRef = useRef(null);
   const progressBarRef = useRef(null);
+  const navigate = useNavigate();
+  console.log(song)
 
   const {
     lastPlayedUri,
@@ -158,13 +161,18 @@ const SongPlayerSidebar = ({ song, token, player, deviceId, onNext }) => {
       className="p-3 rounded-xl shadow-md text-white w-full max-w-[280px] mx-auto"
       style={{ background: bgGradient }}
     >
-      <img
-        ref={imgRef}
-        crossOrigin="anonymous"
-        src={song.album_cover}
-        alt="Album"
-        className="w-full object-cover rounded-md mb-3 max-h-60"
-      />
+      <div
+  onClick={() => navigate(`/song-details/${song.song_id}`)}
+  className="cursor-pointer"
+>
+  <img
+    ref={imgRef}
+    crossOrigin="anonymous"
+    src={song.album_cover}
+    alt="Album"
+    className="w-full object-cover rounded-md mb-3 max-h-60"
+  />
+</div>
 
       <div className="text-center mb-2 overflow-hidden">
         <div className="w-full whitespace-nowrap animate-marquee">
